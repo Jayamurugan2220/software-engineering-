@@ -1,0 +1,9 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Task Service API", "version": "1.0.0" },
+  "paths": {
+    "/api/tasks": { "get": { "summary": "List tasks" }, "post": { "summary": "Create task" } },
+    "/api/tasks/{id}/status": { "patch": { "summary": "Update task status" } },
+    "/api/tasks/{id}": { "delete": { "summary": "Delete task" } }
+  }
+}

@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>User Service Playground</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <h2>User Service Playground</h2>
+    <p>This page lets you call the User service endpoints for quick testing.</p>
+
+    <div class="box">
+      <h3>Register</h3>
+      <label>Name <input id="reg-name" /></label>
+      <label>Email <input id="reg-email" /></label>
+      <label>Password <input id="reg-pass" type="password" /></label>
+      <button id="btn-register">Register</button>
+      <pre id="reg-res">Response will appear here</pre>
+    </div>
+
+    <div class="box">
+      <h3>Login</h3>
+      <label>Email <input id="login-email" /></label>
+      <label>Password <input id="login-pass" type="password" /></label>
+      <button id="btn-login">Login</button>
+      <pre id="login-res">Response will appear here</pre>
+    </div>
+
+    <div class="box">
+      <h3>Get Users (protected)</h3>
+      <label>Token <input id="token" style="width:80%" /></label>
+      <button id="btn-get-users">Get Users</button>
+      <pre id="users-res">Response will appear here</pre>
+    </div>
+
+    <script>
+      const apiBase = location.protocol + '//' + location.hostname + (location.port ? ':'+location.port : '') ;
+
+      document.getElementById('btn-register').onclick = async () => {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-pass').value;
+        const res = await fetch(apiBase + '/api/auth/register', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ name, email, password })
+        });
+        const json = await res.json();
+        document.getElementById('reg-res').textContent = JSON.stringify(json, null, 2);
+      };
+
+      document.getElementById('btn-login').onclick = async () => {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-pass').value;
+        const res = await fetch(apiBase + '/api/auth/login', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ email, password })
+        });
+        const json = await res.json();
+        document.getElementById('login-res').textContent = JSON.stringify(json, null, 2);
+        if (json.token) {
+          document.getElementById('token').value = json.token;
+        }
+      };
+
+      document.getElementById('btn-get-users').onclick = async () => {
+        const token = document.getElementById('token').value;
+        const res = await fetch(apiBase + '/api/users', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        const json = await res.json();
+        document.getElementById('users-res').textContent = JSON.stringify(json, null, 2);
+      };
+    </script>
+  </body>
+</html>

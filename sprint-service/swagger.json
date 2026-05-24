@@ -1,0 +1,8 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Sprint Service API", "version": "1.0.0" },
+  "paths": {
+    "/api/sprints": { "get": { "summary": "List sprints", "responses": { "200": { "description": "OK" } } }, "post": { "summary": "Create sprint", "responses": { "201": { "description": "Created" } } } },
+    "/api/sprints/{id}": { "put": { "summary": "Update sprint", "responses": { "200": { "description": "OK" } } }, "delete": { "summary": "Delete sprint", "responses": { "200": { "description": "OK" } } } }
+  }
+}

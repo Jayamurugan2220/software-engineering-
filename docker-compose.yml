@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6.0
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.user-service
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/user-service
+      - JWT_SECRET=supersecret
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+
+  sprint-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.sprint-service
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/sprint-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongo
+
+  task-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.task-service
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/task-service
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
