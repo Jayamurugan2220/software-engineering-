@@ -1,0 +1,28 @@
+# Blue deployment: initially active
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-blue
+  labels:
+    app: my-app
+    version: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: my-app
+        version: blue
+        active: "true"   # service selects pods with active: "true"
+    spec:
+      containers:
+        - name: my-app
+          # Replace this image with your registry image (workflow writes tags)
+          image: REPLACE_IMAGE
+          ports:
+            - containerPort: 80
+          imagePullPolicy: IfNotPresent
