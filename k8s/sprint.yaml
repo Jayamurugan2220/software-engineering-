@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sprint-service
+  namespace: softer-eng
+  labels:
+    app: sprint-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sprint-service
+  template:
+    metadata:
+      labels:
+        app: sprint-service
+    spec:
+      containers:
+        - name: sprint-service
+          image: sprint-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3002
+          env:
+            - name: PORT
+              value: "3002"
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017/sprintdb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sprint-service
+  namespace: softer-eng
+  labels:
+    app: sprint-service
+spec:
+  type: ClusterIP
+  selector:
+    app: sprint-service
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
