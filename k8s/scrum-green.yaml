@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrum-green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scrum-app
+      version: green
+  template:
+    metadata:
+      labels:
+        app: scrum-app
+        version: green
+    spec:
+      containers:
+        - name: scrum-app
+          image: user-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017/userdb"
+          ports:
+            - containerPort: 5000

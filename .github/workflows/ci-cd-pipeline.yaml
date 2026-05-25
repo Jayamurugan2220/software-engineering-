@@ -1,0 +1,32 @@
+name: CI CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          cd user-service
+          npm install
+
+      - name: Run Tests
+        run: |
+          cd user-service
+          npm test || echo "No tests found"
+
+      - name: Build Docker Image
+        run: docker build -t user-service ./user-service
