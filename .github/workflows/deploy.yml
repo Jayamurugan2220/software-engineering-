@@ -31,7 +31,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./user-service/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

@@ -8,6 +8,9 @@ on:
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: my-app
+      REGISTRY: ${{ secrets.REGISTRY }}
 
     steps:
       - name: Checkout Code
@@ -28,5 +31,33 @@ jobs:
           cd user-service
           npm test || echo "No tests found"
 
-      - name: Build Docker Image
-        run: docker build -t user-service ./user-service
+      - name: Log in to container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./user-service/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Configure kubectl
+        if: ${{ secrets.KUBE_CONFIG != '' }}
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Restore kubeconfig and apply manifests
+        if: ${{ secrets.KUBE_CONFIG != '' }}
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+          kubectl apply -f k8s/blue-deployment.yaml
+          kubectl apply -f k8s/green-deployment.yaml
+          kubectl apply -f k8s/service.yaml
